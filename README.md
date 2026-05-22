@@ -53,7 +53,7 @@ Para comecar com uma amostra pequena, ajuste `KOMMO_MAX_LEADS` no `.env`.
 Como a aba Chats mostra o texto das mensagens, o projeto tambem tem snippets para rodar no console do Chrome enquanto a Kommo esta aberta.
 
 - `browser-snippets/scan-open-kommo-chat-v7.js`: le a conversa aberta.
-- `browser-snippets/scan-kommo-search-results-test-v2.js`: teste semi-automatico limitado aos primeiros resultados da busca atual, com remocao de duplicados e conferencia da frase pesquisada.
+- `browser-snippets/scan-kommo-search-results-v4.js`: coletor semi-automatico com validacao explicita das 2 frases longas usadas no relatorio.
 
 Fluxo seguro:
 
