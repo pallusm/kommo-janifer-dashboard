@@ -7,6 +7,9 @@
     "check:account": "node scripts/check-account.mjs",
     "map:kommo": "node scripts/map-kommo.mjs",
     "events:messages": "node scripts/fetch-message-events.mjs",
-    "fetch:kommo": "node scripts/fetch-kommo-report.mjs"
+    "fetch:kommo": "node scripts/fetch-kommo-report.mjs",
+    "import:scan": "node scripts/import-scan-results.mjs",
+    "build:dashboard": "node scripts/build-dashboard-data.mjs",
+    "publish:dashboard": "npm run build:dashboard && git add docs/data.json && git commit -m \"Update dashboard data\" && git push"
   }
 }

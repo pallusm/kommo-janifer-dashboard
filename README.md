@@ -7,7 +7,6 @@ Projeto para consultar dados do CRM Kommo via API, inicialmente em modo somente 
 - Buscar dados dos ultimos 15 dias.
 - Procurar as frases:
   - `Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer`
-  - `Olá`
   - `Olá, gostaria de informações sobre agendamento com a Dra. Janifer.`
 - Separar sinais de origem, especialmente trafego e Instagram.
 - Evoluir depois para dashboard/site automatizado para apresentar ao cliente.
@@ -72,3 +71,41 @@ A primeira versao do dashboard esta em `site/` e uma copia pronta para GitHub Pa
 Para abrir localmente, use o arquivo:
 
 `docs/index.html`
+
+## Fluxo incremental
+
+O dashboard publico le apenas `docs/data.json`, com dados agregados. Os detalhes coletados ficam no arquivo local `data/store.json`, que nao sobe para o Git.
+
+Passo a passo:
+
+1. Rode um scanner na Kommo.
+2. No console, copie os resultados com um destes comandos:
+
+```js
+copy(JSON.stringify(window.__kommoAcompanhamentoResultados, null, 2))
+```
+
+ou
+
+```js
+copy(JSON.stringify(window.__kommoAgendamentoResultados, null, 2))
+```
+
+3. Cole o JSON em `imports/scan-results.json`.
+4. Importe para o store local:
+
+```bash
+npm run import:scan
+```
+
+5. Gere os agregados publicos:
+
+```bash
+npm run build:dashboard
+```
+
+6. Publique o dashboard:
+
+```bash
+npm run publish:dashboard
+```

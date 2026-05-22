@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-22T00:00:00.000Z",
+  "records": [
+    {
+      "rodada": "acompanhamento",
+      "frase_esperada": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
+      "lead": "exemplo-mascarado",
+      "conversa": "conversa-mascarada",
+      "origem": "Instagram",
+      "data": "Hoje 10:47",
+      "remetente": "Nome",
+      "primeira_mensagem": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
+      "frase_detectada": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
+      "valido": true
+    }
+  ]
+}

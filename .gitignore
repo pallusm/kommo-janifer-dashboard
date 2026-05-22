@@ -1,5 +1,7 @@
 .env
 data/*.json
+!data/store.example.json
+imports/*.json
 outputs/
 node_modules/
 .DS_Store
