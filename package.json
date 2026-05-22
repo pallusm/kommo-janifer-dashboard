@@ -1,0 +1,12 @@
+{
+  "name": "kommo-janifer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:account": "node scripts/check-account.mjs",
+    "map:kommo": "node scripts/map-kommo.mjs",
+    "events:messages": "node scripts/fetch-message-events.mjs",
+    "fetch:kommo": "node scripts/fetch-kommo-report.mjs"
+  }
+}

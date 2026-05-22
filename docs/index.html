@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard Kommo - Dra. Janifer</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Kommo CRM</p>
+          <h1>Primeiro contato - Dra. Janifer</h1>
+        </div>
+        <div class="period">07/05/2026 a 22/05/2026</div>
+      </section>
+
+      <section class="metrics" aria-label="Resumo">
+        <article>
+          <span>Total validado</span>
+          <strong id="total-validos">2</strong>
+        </article>
+        <article>
+          <span>Tráfego</span>
+          <strong id="total-trafego">1</strong>
+        </article>
+        <article>
+          <span>Sem origem</span>
+          <strong id="total-sem-origem">1</strong>
+        </article>
+        <article>
+          <span>Descartados</span>
+          <strong id="total-descartados">1</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Frases de entrada</h2>
+          <p>Casos confirmados visualmente na aba Chats, sem alteração no CRM.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Conversa</th>
+                <th>Data</th>
+                <th>Frase</th>
+                <th>Origem</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <script src="./script.js"></script>
+  </body>
+</html>
