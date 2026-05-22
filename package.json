@@ -10,6 +10,8 @@
     "fetch:kommo": "node scripts/fetch-kommo-report.mjs",
     "import:scan": "node scripts/import-scan-results.mjs",
     "build:dashboard": "node scripts/build-dashboard-data.mjs",
+    "collector": "node scripts/collector-server.mjs",
+    "collector:publish": "KOMMO_COLLECTOR_AUTO_PUBLISH=1 node scripts/collector-server.mjs",
     "publish:dashboard": "npm run build:dashboard && git add docs/data.json && git commit -m \"Update dashboard data\" && git push"
   }
 }

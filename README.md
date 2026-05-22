@@ -76,9 +76,59 @@ Para abrir localmente, use o arquivo:
 
 O dashboard publico le apenas `docs/data.json`, com dados agregados. Os detalhes coletados ficam no arquivo local `data/store.json`, que nao sobe para o Git.
 
-Passo a passo:
+### Modo automatico local
 
-1. Rode um scanner na Kommo.
+Este e o fluxo recomendado para evitar copiar e colar JSON.
+
+1. No terminal do projeto, ligue o coletor local:
+
+```bash
+npm run collector
+```
+
+2. Na Kommo, abra a aba Chats e pesquise:
+
+```text
+acompanhamento com a Dra. Janifer
+```
+
+3. No console do Chrome, rode o conteudo de:
+
+```text
+browser-snippets/scan-acompanhamento-auto-post-v6.js
+```
+
+4. Depois pesquise:
+
+```text
+informações sobre agendamento com a Dra. Janifer
+```
+
+5. No console do Chrome, rode o conteudo de:
+
+```text
+browser-snippets/scan-agendamento-auto-post-v6.js
+```
+
+Os scanners enviam os resultados para `http://127.0.0.1:8789/import`. O coletor local deduplica, atualiza `data/store.json` e recalcula `docs/data.json` e `site/data.json`.
+
+Para publicar depois de conferir:
+
+```bash
+npm run publish:dashboard
+```
+
+Se quiser que o coletor tente publicar automaticamente a cada importacao, use:
+
+```bash
+npm run collector:publish
+```
+
+### Modo manual de contingencia
+
+Use este fluxo apenas se o coletor local nao estiver disponivel.
+
+1. Rode um scanner manual na Kommo.
 2. No console, copie os resultados com um destes comandos:
 
 ```js
@@ -109,3 +159,7 @@ npm run build:dashboard
 ```bash
 npm run publish:dashboard
 ```
+
+## Plano futuro
+
+O arquivo `ROADMAP.md` guarda o desejo de evoluir para analise qualitativa: conversao, nao conversao, motivos, relatos anonimizados e melhorias de abordagem.
