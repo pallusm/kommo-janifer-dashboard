@@ -11,7 +11,8 @@ const fallbackData = {
         Instagram: 7,
         Tráfego: 1,
         'Sem origem': 2
-      }
+      },
+      funnel: {}
     },
     {
       key: 'agendamento',
@@ -22,9 +23,17 @@ const fallbackData = {
         Instagram: 9,
         Tráfego: 0,
         'Sem origem': 10
-      }
+      },
+      funnel: {}
     }
-  ]
+  ],
+  funnel: {},
+  commercialStatus: {},
+  quality: {
+    conversionReasons: {},
+    lossReasons: {},
+    anonymizedReports: []
+  }
 };
 
 const formatPercent = (value) => `${Math.round(value)}%`;
@@ -51,6 +60,12 @@ function calculate(data) {
     return acc;
   }, {});
   const topPhrase = data.phrases.slice().sort((a, b) => b.valid - a.valid)[0];
+  const funnel = data.funnel || data.phrases.reduce((acc, item) => {
+    for (const [stage, value] of Object.entries(item.funnel || {})) {
+      acc[stage] = (acc[stage] || 0) + value;
+    }
+    return acc;
+  }, {});
 
   return {
     valid,
@@ -58,6 +73,7 @@ function calculate(data) {
     sample,
     validRate: sample ? (valid / sample) * 100 : 0,
     origins,
+    funnel,
     topPhrase
   };
 }
@@ -133,6 +149,38 @@ function renderOrigins(totals) {
     .join('');
 }
 
+function renderFunnel(totals) {
+  const container = document.querySelector('#funnel-bars');
+  const entries = Object.entries(totals.funnel || {}).filter(([, value]) => value > 0);
+
+  if (!entries.length) {
+    container.innerHTML = `
+      <article class="insight">
+        <strong>Funil aguardando coleta</strong>
+        <p>Quando a leitura da página Leads for executada, este bloco mostrará em quais etapas estão os leads encontrados nas conversas.</p>
+      </article>
+    `;
+    return;
+  }
+
+  const max = Math.max(...entries.map(([, value]) => value), 1);
+
+  container.innerHTML = entries
+    .sort((a, b) => b[1] - a[1])
+    .map(([stage, value]) => `
+      <div class="bar-row">
+        <div class="bar-label">
+          <span>${stage}</span>
+          <span>${value}</span>
+        </div>
+        <div class="bar-track" aria-hidden="true">
+          <div class="bar-fill alt" style="width: ${(value / max) * 100}%"></div>
+        </div>
+      </div>
+    `)
+    .join('');
+}
+
 function renderInsights(totals) {
   const agendamentoShare = totals.valid ? (totals.topPhrase.valid / totals.valid) * 100 : 0;
   const noOriginShare = totals.valid ? ((totals.origins['Sem origem'] || 0) / totals.valid) * 100 : 0;
@@ -154,6 +202,52 @@ function renderInsights(totals) {
   `;
 }
 
+function renderQuality(data) {
+  const quality = data.quality || {};
+  const conversionReasons = Object.entries(quality.conversionReasons || {});
+  const lossReasons = Object.entries(quality.lossReasons || {});
+  const reports = quality.anonymizedReports || [];
+
+  if (!conversionReasons.length && !lossReasons.length && !reports.length) {
+    document.querySelector('#quality-insights').innerHTML = `
+      <article class="insight">
+        <strong>Camada qualitativa preparada</strong>
+        <p>O próximo avanço é classificar conversão, perda, objeções e relatos anonimizados sem publicar dados sensíveis.</p>
+      </article>
+      <article class="insight warning">
+        <strong>Dados completos continuam locais</strong>
+        <p>Conversas e nomes não entram no GitHub Pages; aqui entram apenas padrões e exemplos anonimizados.</p>
+      </article>
+    `;
+    return;
+  }
+
+  const reasonText = [...conversionReasons, ...lossReasons]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([reason, value]) => `<span class="chip">${reason}: ${value}</span>`)
+    .join('');
+  const reportText = reports
+    .slice(0, 2)
+    .map((report) => `<p>${report.text}</p>`)
+    .join('');
+
+  document.querySelector('#quality-insights').innerHTML = `
+    <article class="insight">
+      <strong>Motivos e objeções recorrentes</strong>
+      <div class="phrase-meta">${reasonText || '<span class="chip">Aguardando classificação</span>'}</div>
+    </article>
+    <article class="insight">
+      <strong>Relatos anonimizados</strong>
+      ${reportText || '<p>Aguardando relatos anonimizados.</p>'}
+    </article>
+  `;
+}
+
+function topEntry(entries) {
+  return Object.entries(entries || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Aguardando coleta';
+}
+
 function renderTable(data) {
   document.querySelector('#summary-rows').innerHTML = data.phrases
     .map((item) => {
@@ -169,6 +263,7 @@ function renderTable(data) {
           <td>${item.origins.Instagram || 0}</td>
           <td>${item.origins.Tráfego || 0}</td>
           <td>${item.origins['Sem origem'] || 0}</td>
+          <td>${topEntry(item.funnel)}</td>
         </tr>
       `;
     })
@@ -180,6 +275,8 @@ loadData().then((data) => {
   renderKpis(data, totals);
   renderPhrases(data);
   renderOrigins(totals);
+  renderFunnel(totals);
   renderInsights(totals);
+  renderQuality(data);
   renderTable(data);
 });

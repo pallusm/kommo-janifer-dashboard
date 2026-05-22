@@ -12,6 +12,9 @@
     "build:dashboard": "node scripts/build-dashboard-data.mjs",
     "collector": "node scripts/collector-server.mjs",
     "collector:publish": "KOMMO_COLLECTOR_AUTO_PUBLISH=1 node scripts/collector-server.mjs",
+    "kommo:auth": "node scripts/kommo-browser-auth.mjs",
+    "kommo:collect": "node scripts/kommo-browser-collect.mjs",
+    "kommo:scan-leads": "node scripts/kommo-browser-scan-leads-board.mjs",
     "publish:dashboard": "npm run build:dashboard && git add docs/data.json && git commit -m \"Update dashboard data\" && git push"
   }
 }

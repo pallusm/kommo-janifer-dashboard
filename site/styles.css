@@ -272,6 +272,10 @@ h2 {
   background: var(--teal);
 }
 
+.bar-fill.alt {
+  background: var(--green);
+}
+
 .insight {
   padding: 12px;
   background: var(--panel-soft);

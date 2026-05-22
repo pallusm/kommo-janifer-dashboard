@@ -7,11 +7,19 @@
       "frase_esperada": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
       "lead": "exemplo-mascarado",
       "conversa": "conversa-mascarada",
+      "lead_nome": "Nome mascarado",
       "origem": "Instagram",
       "data": "Hoje 10:47",
       "remetente": "Nome",
       "primeira_mensagem": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
       "frase_detectada": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
+      "funil_pipeline": "[01][01] - Funil Agendamento",
+      "funil_etapa": "ETapa01 - Conexão",
+      "funil_valor": "R$0",
+      "status_comercial": "",
+      "motivo_conversao": "",
+      "motivo_nao_conversao": "",
+      "relato_anonimizado": "",
       "valido": true
     }
   ]

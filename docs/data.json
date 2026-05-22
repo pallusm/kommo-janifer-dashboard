@@ -11,7 +11,8 @@
         "Instagram": 7,
         "Tráfego": 1,
         "Sem origem": 2
-      }
+      },
+      "funnel": {}
     },
     {
       "key": "agendamento",
@@ -22,7 +23,15 @@
         "Instagram": 9,
         "Tráfego": 0,
         "Sem origem": 10
-      }
+      },
+      "funnel": {}
     }
-  ]
+  ],
+  "funnel": {},
+  "commercialStatus": {},
+  "quality": {
+    "conversionReasons": {},
+    "lossReasons": {},
+    "anonymizedReports": []
+  }
 }

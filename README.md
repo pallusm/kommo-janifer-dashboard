@@ -13,8 +13,9 @@ Projeto para consultar dados do CRM Kommo via API, inicialmente em modo somente 
 
 ## Segurança
 
-- Nao usar login/senha.
-- Usar apenas API.
+- Nao salvar login/senha no repositorio.
+- Quando a interface for necessaria, usar sessao local salva em `.auth/`, ignorada pelo Git.
+- Preferir API oficial quando os dados estiverem disponiveis por API.
 - Nao alterar nada no Kommo sem autorizacao.
 - Comecar com consultas `GET` somente leitura para mapear conta, leads, tags, origens e conversas/anotacoes.
 
@@ -76,9 +77,41 @@ Para abrir localmente, use o arquivo:
 
 O dashboard publico le apenas `docs/data.json`, com dados agregados. Os detalhes coletados ficam no arquivo local `data/store.json`, que nao sobe para o Git.
 
-### Modo automatico local
+### Robo local com navegador
 
-Este e o fluxo recomendado para evitar copiar e colar JSON.
+Este e o fluxo recomendado para automatizar sem guardar senha.
+
+1. Na primeira vez, abra o navegador de autenticacao:
+
+```bash
+npm run kommo:auth
+```
+
+Faca login manualmente na Kommo. Depois volte ao terminal e pressione Enter. A sessao fica salva apenas em `.auth/`, que nao sobe para o Git.
+
+2. Para coletar automaticamente as duas frases na aba Chats:
+
+```bash
+npm run kommo:collect
+```
+
+Esse comando abre o navegador, entra na Kommo usando a sessao local, pesquisa as duas frases, abre resultados visiveis, coleta dados, deduplica e atualiza o dashboard local.
+
+3. Para tentar cruzar os leads coletados com a pagina Leads/funil:
+
+```bash
+npm run kommo:scan-leads
+```
+
+4. Para publicar depois de conferir:
+
+```bash
+npm run publish:dashboard
+```
+
+### Coletor local com snippets
+
+Este modo continua disponivel como alternativa controlada.
 
 1. No terminal do projeto, ligue o coletor local:
 

@@ -1,4 +1,5 @@
 .env
+.auth/
 data/*.json
 !data/store.example.json
 imports/*.json
