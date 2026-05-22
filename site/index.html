@@ -7,42 +7,81 @@
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <main class="shell">
-      <section class="topbar">
+    <main class="app-shell">
+      <header class="header">
         <div>
           <p class="eyebrow">Kommo CRM</p>
           <h1>Primeiro contato - Dra. Janifer</h1>
+          <p class="subtitle">Leads classificados pelas mensagens iniciais capturadas na aba Chats.</p>
         </div>
-        <div class="period">07/05/2026 a 22/05/2026</div>
+        <div class="status-panel">
+          <span>Período</span>
+          <strong id="period-label">Carregando</strong>
+          <small id="updated-label">Atualizando dados</small>
+        </div>
+      </header>
+
+      <section class="kpi-grid" aria-label="Indicadores principais">
+        <article class="kpi-card primary">
+          <span>Leads válidos</span>
+          <strong id="kpi-validos">0</strong>
+          <small id="kpi-validos-detail">0% da amostra</small>
+        </article>
+        <article class="kpi-card">
+          <span>Amostra lida</span>
+          <strong id="kpi-amostra">0</strong>
+          <small id="kpi-descartados">0 descartados</small>
+        </article>
+        <article class="kpi-card">
+          <span>Instagram</span>
+          <strong id="kpi-instagram">0</strong>
+          <small id="kpi-instagram-share">0% dos válidos</small>
+        </article>
+        <article class="kpi-card attention">
+          <span>Sem origem</span>
+          <strong id="kpi-sem-origem">0</strong>
+          <small id="kpi-sem-origem-share">0% dos válidos</small>
+        </article>
       </section>
 
-      <section class="metrics" aria-label="Resumo">
-        <article>
-          <span>Total validado</span>
-          <strong id="total-validos">0</strong>
+      <section class="content-grid">
+        <article class="panel wide">
+          <div class="panel-header">
+            <div>
+              <h2>Entrada por frase</h2>
+              <p>Comparação de volume validado, descarte e origem atribuída.</p>
+            </div>
+          </div>
+          <div id="phrase-list" class="phrase-list"></div>
         </article>
-        <article>
-          <span>Instagram</span>
-          <strong id="total-instagram">0</strong>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Origem dos válidos</h2>
+              <p>Distribuição consolidada entre as duas frases.</p>
+            </div>
+          </div>
+          <div id="origin-bars" class="bar-list"></div>
         </article>
-        <article>
-          <span>Tráfego</span>
-          <strong id="total-trafego">0</strong>
-        </article>
-        <article>
-          <span>Sem origem</span>
-          <strong id="total-sem-origem">0</strong>
-        </article>
-        <article>
-          <span>Descartados</span>
-          <strong id="total-descartados">0</strong>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Insights</h2>
+              <p>Leituras rápidas para orientar a conversa com o cliente.</p>
+            </div>
+          </div>
+          <div id="insights" class="insight-list"></div>
         </article>
       </section>
 
       <section class="panel">
-        <div class="panel-heading">
-          <h2>Resumo por frase</h2>
-          <p>Coleta via aba Chats, somente leitura, sem alteração no CRM.</p>
+        <div class="panel-header">
+          <div>
+            <h2>Resumo analítico</h2>
+            <p>Dados agregados, sem expor leads, conversas ou informações pessoais.</p>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -51,12 +90,13 @@
                 <th>Frase</th>
                 <th>Válidos</th>
                 <th>Descartados</th>
+                <th>Taxa válida</th>
                 <th>Instagram</th>
                 <th>Tráfego</th>
                 <th>Sem origem</th>
               </tr>
             </thead>
-            <tbody id="rows"></tbody>
+            <tbody id="summary-rows"></tbody>
           </table>
         </div>
       </section>

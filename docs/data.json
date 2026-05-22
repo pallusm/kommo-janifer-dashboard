@@ -1,0 +1,28 @@
+{
+  "period": "07/05/2026 a 22/05/2026",
+  "updatedAt": "22/05/2026 18:00",
+  "phrases": [
+    {
+      "key": "acompanhamento",
+      "label": "Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer",
+      "valid": 10,
+      "discarded": 15,
+      "origins": {
+        "Instagram": 7,
+        "Tráfego": 1,
+        "Sem origem": 2
+      }
+    },
+    {
+      "key": "agendamento",
+      "label": "Olá, gostaria de informações sobre agendamento com a Dra. Janifer.",
+      "valid": 19,
+      "discarded": 6,
+      "origins": {
+        "Instagram": 9,
+        "Tráfego": 0,
+        "Sem origem": 10
+      }
+    }
+  ]
+}
