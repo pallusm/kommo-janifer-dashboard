@@ -8,6 +8,9 @@ Ideias registradas:
 
 - Identificar quais leads converteram e quais nao converteram.
 - Cruzar frase de entrada, origem, status/funil e resultado comercial.
+- Coletar informacoes da pagina Leads para localizar, dentro do funil de vendas, em qual etapa estao os leads encontrados nas conversas.
+- Relacionar cada lead consultado na aba Chats com sua etapa atual no board de Leads, como oportunidade, agendado, confirmacao de pagamento, reagendamento, venda perdida ou outras fases existentes.
+- Usar essa leitura do funil para medir progressao por frase de entrada e por origem.
 - Mapear motivos de conversao:
   - urgencia;
   - confianca na Dra. Janifer;
