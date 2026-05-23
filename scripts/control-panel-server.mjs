@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 import { readStore, STORE_PATH } from './store-utils.mjs';
 
@@ -9,6 +9,7 @@ const PORT = Number(process.env.KOMMO_PANEL_PORT || 8790);
 const ROOT = process.cwd();
 const PANEL_DIR = resolve(ROOT, 'control-panel');
 const DOCS_DIR = resolve(ROOT, 'docs');
+const RUNTIME_HOME = resolve(ROOT, '.runtime-home');
 const OPEN_ON_START = process.argv.includes('--open');
 const PUBLIC_URL = 'https://pallusm.github.io/kommo-janifer-dashboard/';
 const PUBLIC_ORIGIN = 'https://pallusm.github.io';
@@ -123,10 +124,27 @@ function runStep(job, step, previousCode) {
 
     appendLog(job, `\n== ${step.label} ==\n`);
 
+    const isBrowserStep = step.args.some((arg) => String(arg).includes('kommo-browser-'));
+    const extraEnv = {};
+
+    if (isBrowserStep) {
+      mkdirSync(resolve(RUNTIME_HOME, 'Library', 'Application Support'), { recursive: true });
+      mkdirSync(resolve(ROOT, '.tmp'), { recursive: true });
+
+      Object.assign(extraEnv, {
+        HOME: RUNTIME_HOME,
+        PLAYWRIGHT_BROWSERS_PATH: resolve(process.env.HOME || '', 'Library', 'Caches', 'ms-playwright'),
+        XDG_CONFIG_HOME: resolve(RUNTIME_HOME, '.config'),
+        XDG_CACHE_HOME: resolve(RUNTIME_HOME, '.cache'),
+        TMPDIR: resolve(ROOT, '.tmp')
+      });
+    }
+
     const child = spawn(step.command, step.args, {
       cwd: ROOT,
       env: {
         ...process.env,
+        ...extraEnv,
         KOMMO_HEADLESS: process.env.KOMMO_HEADLESS || '0'
       },
       shell: false
@@ -203,7 +221,11 @@ function panelStatus() {
     localDashboardUrl: `http://${HOST}:${PORT}/dashboard/`,
     sessionSaved: existsSync(resolve(ROOT, '.auth', 'kommo-browser-profile')),
     store: summarizeStore(),
-    job: currentJob || lastJob
+    job: currentJob || lastJob,
+    hints: [
+      'Se coleta ou leitura do funil falharem ao abrir o navegador, feche esta aba e abra o arquivo Abrir Painel Kommo.command pela pasta do projeto.',
+      'O painel aberto de dentro do Codex pode ser bloqueado pelo macOS para automacao de navegador.'
+    ]
   };
 }
 

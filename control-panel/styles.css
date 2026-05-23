@@ -217,6 +217,11 @@ pre {
   border-left: 4px solid var(--green);
 }
 
+.safety.attention {
+  margin-bottom: 12px;
+  border-left-color: var(--amber);
+}
+
 .safety strong {
   display: block;
   margin-bottom: 6px;

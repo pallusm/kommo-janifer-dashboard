@@ -6,5 +6,7 @@ imports/*.json
 outputs/
 node_modules/
 .DS_Store
+.runtime-home/
+.tmp/
 Kommo Janifer.app/
 KommoPanel.app/

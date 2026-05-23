@@ -37,15 +37,32 @@ function renderJob(job) {
   }[job.status] || job.status;
 
   jobStatus.textContent = statusLabel;
-  logs.textContent = (job.logs || []).join('').trim() || 'Aguardando primeira resposta...';
+  const text = (job.logs || []).join('').trim();
+  const browserBlocked = /bootstrap_check_in|Crashpad|Target page, context or browser has been closed|Permission denied/i.test(text);
+  const helper = browserBlocked
+    ? '\n\nOrientacao: este painel provavelmente foi iniciado de dentro do Codex. Para coletar, abra o arquivo "Abrir Painel Kommo.command" diretamente na pasta do projeto e rode a acao por la.'
+    : '';
+
+  logs.textContent = `${text || 'Aguardando primeira resposta...'}${helper}`;
   logs.scrollTop = logs.scrollHeight;
   setBusy(job.status === 'running');
   document.body.classList.toggle('success', job.status === 'success');
 }
 
 async function refreshStatus() {
-  const response = await fetch('/api/status', { cache: 'no-store' });
-  const status = await response.json();
+  let response;
+  let status;
+
+  try {
+    response = await fetch('/api/status', { cache: 'no-store' });
+    status = await response.json();
+  } catch {
+    jobStatus.textContent = 'Painel local desligado. Abra o atalho local novamente.';
+    logs.textContent = 'Nao consegui conversar com o servidor local em 127.0.0.1:8790.';
+    setBusy(false);
+    return;
+  }
+
   const store = status.store || {};
 
   sessionStatus.textContent = status.sessionSaved ? 'Sessão salva' : 'Sessão pendente';
@@ -74,8 +91,17 @@ async function runAction(kind) {
   logs.textContent = 'Iniciando...';
   jobStatus.textContent = 'Preparando ação...';
 
-  const response = await fetch(`/api/run/${kind}`, { method: 'POST' });
-  const result = await response.json();
+  let result;
+
+  try {
+    const response = await fetch(`/api/run/${kind}`, { method: 'POST' });
+    result = await response.json();
+  } catch {
+    jobStatus.textContent = 'Painel local desligado.';
+    logs.textContent = 'Abra o atalho local novamente e tente mais uma vez.';
+    setBusy(false);
+    return;
+  }
 
   if (!result.ok) {
     jobStatus.textContent = result.error || 'Não foi possível iniciar.';
