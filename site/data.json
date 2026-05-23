@@ -1,6 +1,6 @@
 {
   "period": "07/05/2026 a 22/05/2026",
-  "updatedAt": "22/05/2026, 23:05",
+  "updatedAt": "22/05/2026, 23:23",
   "phrases": [
     {
       "key": "acompanhamento",
@@ -15,7 +15,8 @@
       "funnel": {
         "1 - Conexão": 3,
         "2 - Oportunidade": 3,
-        "Sem etapa": 3
+        "Stand By": 2,
+        "Venda perdida": 1
       }
     },
     {
@@ -31,17 +32,21 @@
         "1 - Conexão": 4,
         "4 - Confirmação de pagamento": 1,
         "2 - Oportunidade": 4,
-        "Sem etapa": 7
+        "Venda perdida": 2,
+        "Stand By": 5
       }
     }
   ],
   "funnel": {
     "1 - Conexão": 7,
     "2 - Oportunidade": 7,
-    "Sem etapa": 10,
+    "Stand By": 7,
+    "Venda perdida": 3,
     "4 - Confirmação de pagamento": 1
   },
-  "commercialStatus": {},
+  "commercialStatus": {
+    "Perdido": 3
+  },
   "quality": {
     "conversionReasons": {},
     "lossReasons": {},

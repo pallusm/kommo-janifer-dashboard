@@ -15,6 +15,7 @@
     "kommo:auth": "node scripts/kommo-browser-auth.mjs",
     "kommo:collect": "node scripts/kommo-browser-collect.mjs",
     "kommo:scan-leads": "node scripts/kommo-browser-scan-leads-board.mjs",
+    "kommo:enrich-api": "node scripts/kommo-enrich-leads-api.mjs",
     "publish:dashboard": "npm run build:dashboard && git add docs/data.json && git commit -m \"Update dashboard data\" && git push"
   }
 }

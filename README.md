@@ -103,7 +103,15 @@ Esse comando abre o navegador, entra na Kommo usando a sessao local, pesquisa as
 npm run kommo:scan-leads
 ```
 
-4. Para publicar depois de conferir:
+4. Para preencher leads que ainda ficaram sem etapa usando a API somente leitura:
+
+```bash
+npm run kommo:enrich-api
+```
+
+Esse comando consulta por ID apenas os leads ja coletados e atualiza funil/status no store local.
+
+5. Para publicar depois de conferir:
 
 ```bash
 npm run publish:dashboard
