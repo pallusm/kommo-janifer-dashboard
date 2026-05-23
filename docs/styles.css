@@ -1,17 +1,17 @@
 :root {
   color-scheme: light;
-  --bg: #f3f6f8;
+  --bg: #f0eae0;
   --panel: #ffffff;
-  --panel-soft: #f8fafb;
-  --text: #1d2733;
-  --muted: #677483;
-  --line: #dce3ea;
-  --blue: #2468d8;
-  --teal: #087f8c;
-  --green: #12805c;
-  --amber: #a56600;
+  --panel-soft: #fbf8f2;
+  --text: #4b2915;
+  --muted: #785f50;
+  --line: #d2cac5;
+  --blue: #753b1b;
+  --teal: #926b55;
+  --green: #097747;
+  --amber: #aa7b15;
   --red: #b04444;
-  --ink-soft: #344255;
+  --ink-soft: #4b2915;
 }
 
 * {
@@ -22,7 +22,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Quicksand", Arial, Helvetica, sans-serif;
 }
 
 .app-shell {
@@ -38,6 +38,19 @@ body {
   margin-bottom: 18px;
 }
 
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.brand-logo {
+  display: block;
+  width: 178px;
+  height: auto;
+}
+
 .eyebrow,
 h1,
 h2,
@@ -46,7 +59,7 @@ p {
 }
 
 .eyebrow {
-  margin-bottom: 8px;
+  margin-bottom: 0;
   color: var(--teal);
   font-size: 12px;
   font-weight: 700;
@@ -57,12 +70,14 @@ p {
 h1 {
   margin-bottom: 8px;
   font-size: 32px;
+  font-weight: 700;
   line-height: 1.15;
 }
 
 h2 {
   margin-bottom: 4px;
   font-size: 17px;
+  font-weight: 700;
 }
 
 .subtitle,
@@ -218,7 +233,7 @@ h2 {
 .progress-track {
   height: 8px;
   overflow: hidden;
-  background: #e7edf2;
+  background: #eee6dc;
   border-radius: 999px;
 }
 
@@ -236,7 +251,7 @@ h2 {
 
 .chip {
   padding: 6px 8px;
-  background: #eef3f7;
+  background: #f5efe7;
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink-soft);
@@ -345,7 +360,7 @@ h2 {
 .bar-track {
   height: 10px;
   overflow: hidden;
-  background: #e7edf2;
+  background: #eee6dc;
   border-radius: 999px;
 }
 
@@ -403,7 +418,7 @@ td {
 }
 
 th {
-  background: #edf3f7;
+  background: #f5efe7;
   color: var(--ink-soft);
   font-size: 12px;
   text-transform: uppercase;
@@ -451,6 +466,10 @@ th {
 
   h1 {
     font-size: 25px;
+  }
+
+  .brand-logo {
+    width: 148px;
   }
 
   .kpi-grid,
