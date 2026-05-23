@@ -182,14 +182,15 @@ function renderFunnel(totals) {
 }
 
 function renderInsights(totals) {
-  const agendamentoShare = totals.valid ? (totals.topPhrase.valid / totals.valid) * 100 : 0;
+  const topPhraseShare = totals.valid && totals.topPhrase ? (totals.topPhrase.valid / totals.valid) * 100 : 0;
   const noOriginShare = totals.valid ? ((totals.origins['Sem origem'] || 0) / totals.valid) * 100 : 0;
   const instagramShare = totals.valid ? ((totals.origins.Instagram || 0) / totals.valid) * 100 : 0;
+  const topPhraseLabel = totals.topPhrase?.key === 'agendamento' ? 'Agendamento' : 'Acompanhamento';
 
   document.querySelector('#insights').innerHTML = `
     <article class="insight">
-      <strong>Agendamento lidera a intenção capturada</strong>
-      <p>A frase de maior volume representa ${formatPercent(agendamentoShare)} dos leads válidos da amostra.</p>
+      <strong>${topPhraseLabel} lidera a intenção capturada</strong>
+      <p>A frase de maior volume representa ${formatPercent(topPhraseShare)} dos leads válidos da amostra.</p>
     </article>
     <article class="insight">
       <strong>Instagram concentra a principal origem identificada</strong>
@@ -200,6 +201,192 @@ function renderInsights(totals) {
       <p>${formatPercent(noOriginShare)} dos válidos estão sem origem, o que limita leitura de performance por canal.</p>
     </article>
   `;
+}
+
+function topPair(entries) {
+  return Object.entries(entries || {})
+    .filter(([, value]) => value > 0)
+    .sort((a, b) => b[1] - a[1])[0] || null;
+}
+
+function countStages(funnel, names) {
+  return names.reduce((total, name) => total + (funnel?.[name] || 0), 0);
+}
+
+function renderDiagnostic(data, totals) {
+  const topStage = topPair(totals.funnel);
+  const topOrigin = topPair(totals.origins);
+  const noOrigin = totals.origins['Sem origem'] || 0;
+  const lost = countStages(totals.funnel, ['Venda perdida']) || (data.commercialStatus?.Perdido || 0);
+  const standBy = countStages(totals.funnel, ['Stand By']);
+  const payment = countStages(totals.funnel, ['4 - Confirmação de pagamento', 'Confirmação de pagamento']);
+  const opportunity = countStages(totals.funnel, ['2 - Oportunidade', 'Oportunidade']);
+  const connection = countStages(totals.funnel, ['1 - Conexão', 'Conexão']);
+  const advanced = opportunity + payment;
+  const noOriginShare = totals.valid ? (noOrigin / totals.valid) * 100 : 0;
+  const lostShare = totals.valid ? (lost / totals.valid) * 100 : 0;
+
+  const cards = [
+    {
+      label: 'Gargalo visível',
+      value: topStage ? topStage[0] : 'Aguardando funil',
+      detail: topStage ? `${topStage[1]} leads estão concentrados nesta etapa.` : 'Execute a leitura do board de Leads para ativar esta análise.',
+      tone: topStage ? 'neutral' : 'warning'
+    },
+    {
+      label: 'Canal dominante',
+      value: topOrigin ? topOrigin[0] : 'Aguardando origem',
+      detail: topOrigin ? `${topOrigin[1]} leads válidos vieram desta origem preenchida.` : 'Ainda não há origem suficiente para comparação.',
+      tone: 'neutral'
+    },
+    {
+      label: 'Perda de atribuição',
+      value: formatPercent(noOriginShare),
+      detail: `${noOrigin} leads válidos estão sem origem preenchida.`,
+      tone: noOriginShare >= 25 ? 'warning' : 'neutral'
+    },
+    {
+      label: 'Sinal de perda',
+      value: lost,
+      detail: `${formatPercent(lostShare)} dos válidos aparecem como venda perdida ou status perdido.`,
+      tone: lost > 0 ? 'warning' : 'neutral'
+    },
+    {
+      label: 'Fila de retomada',
+      value: standBy,
+      detail: 'Leads em Stand By merecem cadência própria de reativação.',
+      tone: standBy > 0 ? 'warning' : 'neutral'
+    },
+    {
+      label: 'Avanço comercial',
+      value: advanced,
+      detail: `${connection} em conexão, ${opportunity} em oportunidade e ${payment} em confirmação de pagamento.`,
+      tone: advanced > 0 ? 'good' : 'neutral'
+    }
+  ];
+
+  document.querySelector('#diagnostic-grid').innerHTML = cards
+    .map((card) => `
+      <article class="diagnostic-card ${card.tone}">
+        <span>${card.label}</span>
+        <strong>${card.value}</strong>
+        <p>${card.detail}</p>
+      </article>
+    `)
+    .join('');
+}
+
+function action(title, body, tag = 'Prioridade') {
+  return { title, body, tag };
+}
+
+function renderActionList(selector, items) {
+  document.querySelector(selector).innerHTML = items
+    .map((item) => `
+      <article class="action-item">
+        <span>${item.tag}</span>
+        <strong>${item.title}</strong>
+        <p>${item.body}</p>
+      </article>
+    `)
+    .join('');
+}
+
+function renderStrategicActions(data, totals) {
+  const noOrigin = totals.origins['Sem origem'] || 0;
+  const instagram = totals.origins.Instagram || 0;
+  const traffic = totals.origins.Tráfego || 0;
+  const lost = countStages(totals.funnel, ['Venda perdida']) || (data.commercialStatus?.Perdido || 0);
+  const standBy = countStages(totals.funnel, ['Stand By']);
+  const connection = countStages(totals.funnel, ['1 - Conexão', 'Conexão']);
+  const opportunity = countStages(totals.funnel, ['2 - Oportunidade', 'Oportunidade']);
+  const payment = countStages(totals.funnel, ['4 - Confirmação de pagamento', 'Confirmação de pagamento']);
+  const topPhraseLabel = totals.topPhrase?.key === 'agendamento' ? 'agendamento' : 'acompanhamento';
+
+  const sdrItems = [
+    action(
+      'Treinar passagem da conexão para oportunidade',
+      `${connection || 0} leads aparecem na etapa de conexão. Vale revisar se a primeira resposta sempre fecha próxima ação clara: nome, cidade, formato de consulta e melhor horário.`,
+      'Abordagem'
+    ),
+    action(
+      'Criar roteiro de retomada para Stand By',
+      `${standBy || 0} leads estão em espera. Use uma cadência curta com motivo, benefício e pergunta simples para reabrir conversa.`,
+      'Follow-up'
+    ),
+    action(
+      'Comparar as duas intenções de entrada',
+      `A frase de ${topPhraseLabel} puxa mais volume na amostra. O próximo treino é comparar se a intenção também avança melhor no funil.`,
+      'Qualificação'
+    )
+  ];
+
+  if (lost > 0) {
+    sdrItems.push(action(
+      'Revisar conversas perdidas',
+      `${lost} leads aparecem como perda. Classificar motivo antes de treinar evita atacar o sintoma errado.`,
+      'Perda'
+    ));
+  }
+
+  const managementItems = [
+    action(
+      'Acompanhar conversão por origem',
+      `Instagram tem ${instagram} válidos e tráfego tem ${traffic}. A decisão de investimento deve cruzar volume, avanço de funil e perda.`,
+      'Canal'
+    ),
+    action(
+      'Olhar funil como indicador de capacidade',
+      `Oportunidade tem ${opportunity || 0} leads e confirmação de pagamento tem ${payment || 0}. Isso ajuda a separar demanda gerada de receita provável.`,
+      'Funil'
+    ),
+    action(
+      'Criar rito semanal de perdas',
+      'Toda semana, separar perdas por motivo: preço, plano, agenda, sem resposta, localidade e falta de clareza.',
+      'Gestão'
+    )
+  ];
+
+  const processItems = [
+    action(
+      'Obrigar origem antes do avanço',
+      `${noOrigin} leads válidos estão sem origem. Sem isso, o dashboard perde força para decidir canal e verba.`,
+      'Dados'
+    ),
+    action(
+      'Automatizar enriquecimento incremental',
+      'Manter a coleta lendo novos registros e atualizando apenas o que mudou reduz retrabalho e risco operacional.',
+      'Automação'
+    ),
+    action(
+      'Separar público de privado',
+      'Conversas completas e nomes ficam locais; GitHub Pages recebe apenas números agregados e relatos anonimizados.',
+      'Segurança'
+    )
+  ];
+
+  const experimentItems = [
+    action(
+      'Teste de abordagem por intenção',
+      'Comparar se leads de acompanhamento precisam de script mais educacional e leads de agendamento precisam de fechamento mais direto.',
+      'Hipótese'
+    ),
+    action(
+      'Teste de cadência para sem resposta',
+      'Medir se uma sequência curta em 24h, 48h e 5 dias aumenta retomada sem pressionar o lead.',
+      'Retomada'
+    ),
+    action(
+      'Teste de qualificação antes de preço',
+      'Validar se entender dor, objetivo e disponibilidade antes de falar de pagamento melhora avanço para confirmação.',
+      'Conversão'
+    )
+  ];
+
+  renderActionList('#sdr-actions', sdrItems);
+  renderActionList('#management-actions', managementItems);
+  renderActionList('#process-actions', processItems);
+  renderActionList('#experiment-actions', experimentItems);
 }
 
 function renderQuality(data) {
@@ -277,6 +464,8 @@ loadData().then((data) => {
   renderOrigins(totals);
   renderFunnel(totals);
   renderInsights(totals);
+  renderDiagnostic(data, totals);
+  renderStrategicActions(data, totals);
   renderQuality(data);
   renderTable(data);
 });

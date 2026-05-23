@@ -14,7 +14,7 @@ Objetivo: transformar o projeto em um dashboard de inteligencia comercial para a
 
 - Repositorio GitHub criado: `pallusm/kommo-janifer-dashboard`.
 - GitHub Pages ativo para o dashboard publico.
-- Dashboard inicial criado com dados agregados por frase e origem.
+- Dashboard criado com dados agregados por frase, origem, funil, status comercial e recomendacoes automaticas.
 - Coleta via interface da Kommo validada em modo somente leitura.
 - Duas frases finais definidas:
   - `Olá, gostaria de saber mais sobre o acompanhamento com a Dra. Janifer`
@@ -24,21 +24,52 @@ Objetivo: transformar o projeto em um dashboard de inteligencia comercial para a
   - `docs/data.json` publico com agregados;
   - deduplicacao de registros;
   - scripts para importar, gerar dashboard e publicar.
-- Coletor local criado para reduzir copia e cola:
-  - recebe dados do navegador em `http://127.0.0.1:8789/import`;
-  - atualiza store local;
-  - recalcula dados do dashboard.
+- Sessao local do Kommo criada em `.auth/`, sem salvar senha no projeto e sem subir para o Git.
+- Coleta automatizada via navegador local criada para buscar as duas frases nos Chats.
+- Leitura da pagina Leads/board criada para identificar etapas visiveis do funil.
+- Enriquecimento por API oficial da Kommo criado com chamadas GET somente leitura.
+- Dashboard publico publica somente agregados; detalhes seguem locais.
+
+## O que ja saiu do roadmap inicial
+
+- Coleta segura de primeiros contatos.
+- Uso de apenas duas frases finais.
+- Deduplicacao de registros.
+- Publicacao no GitHub Pages sem dados sensiveis.
+- Cruzamento com origem.
+- Cruzamento com funil e status comercial.
+- Leitura das etapas principais do board:
+  - `1 - Conexão`;
+  - `2 - Oportunidade`;
+  - `3 - Agendado`;
+  - `4 - Confirmação de pagamento`;
+  - `5 - Reagendamento`.
+- Primeira camada de insights automaticos para:
+  - treinamento SDR;
+  - decisoes de gestao;
+  - melhorias de processo;
+  - proximos experimentos.
+
+## O que ainda ficou de fora
+
+- Motivos reais de conversao e nao conversao extraidos das conversas.
+- Relatos anonimizados prontos para aparecer no dashboard.
+- Classificacao fina de objecoes, como preco, plano, agenda, localidade e sem resposta.
+- Tempo de primeira resposta e tempo entre etapas.
+- Rotina 100% incremental por ultimo item processado em cada frase.
+- Alertas automaticos para gargalos, perdas ou falta de origem.
+- Refinamento visual final do dashboard para apresentacao ao cliente.
 
 ## Fase 1: coleta operacional estavel
 
 Objetivo: transformar a coleta atual em um fluxo repetivel, simples e confiavel.
 
-- Rodar coletor local antes das buscas na Kommo.
-- Executar um scanner para a frase de acompanhamento.
-- Executar outro scanner para a frase de agendamento.
-- Deduplicar automaticamente leads ja vistos.
-- Atualizar o dashboard local sem copiar JSON manualmente.
-- Publicar somente agregados no GitHub Pages.
+- Rodar coletor local antes das buscas na Kommo. Feito.
+- Executar um scanner para a frase de acompanhamento. Feito via navegador local.
+- Executar outro scanner para a frase de agendamento. Feito via navegador local.
+- Deduplicar automaticamente leads ja vistos. Feito.
+- Atualizar o dashboard local sem copiar JSON manualmente. Feito.
+- Publicar somente agregados no GitHub Pages. Feito.
 - Registrar falhas de coleta, como lead aberto sem mensagem visivel ou origem vazia.
 
 Resultado esperado: conseguir atualizar o dashboard de entrada de leads com poucos passos e baixo risco.
@@ -47,8 +78,8 @@ Resultado esperado: conseguir atualizar o dashboard de entrada de leads com pouc
 
 Objetivo: cruzar os leads encontrados nas conversas com a etapa atual no funil de vendas.
 
-- Coletar informacoes da pagina Leads/board.
-- Identificar em qual coluna/etapa esta cada lead consultado na aba Chats.
+- Coletar informacoes da pagina Leads/board. Feito para as etapas visiveis.
+- Identificar em qual coluna/etapa esta cada lead consultado na aba Chats. Feito e complementado por API.
 - Relacionar cada lead com fases como:
   - oportunidade;
   - agendado;
@@ -70,7 +101,7 @@ Resultado esperado: deixar de medir apenas volume e passar a medir qualidade e a
 
 Objetivo: descobrir quais leads converteram, quais nao converteram e onde o processo perde oportunidades.
 
-- Classificar leads em convertidos, em andamento, perdidos e sem resposta.
+- Classificar leads em convertidos, em andamento, perdidos e sem resposta. Parcial: status perdido ja entra; conversao e sem resposta ainda precisam de regra.
 - Medir taxa de conversao por frase de entrada.
 - Medir taxa de conversao por origem.
 - Medir taxa de conversao por etapa do funil.
