@@ -548,6 +548,33 @@ function renderTable(data) {
     .join('');
 }
 
+function setupLocalPanelLink() {
+  const link = document.querySelector('#local-panel-link');
+  if (!link) return;
+
+  link.addEventListener('click', async (event) => {
+    event.preventDefault();
+
+    const localUrl = 'http://127.0.0.1:8790/';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 1200);
+
+    try {
+      const response = await fetch(`${localUrl}api/status`, {
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      if (!response.ok) throw new Error('Painel local indisponivel');
+      window.location.href = localUrl;
+    } catch {
+      window.alert('O painel local ainda nao esta ligado. Abra o arquivo "Abrir Painel Kommo.command" na pasta do projeto e depois clique neste botao de novo.');
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
+}
+
 loadData().then((data) => {
   const totals = calculate(data);
   renderKpis(data, totals);
@@ -561,4 +588,5 @@ loadData().then((data) => {
   renderStrategicActions(data, totals);
   renderQuality(data);
   renderTable(data);
+  setupLocalPanelLink();
 });

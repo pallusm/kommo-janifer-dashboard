@@ -11,6 +11,7 @@ const PANEL_DIR = resolve(ROOT, 'control-panel');
 const DOCS_DIR = resolve(ROOT, 'docs');
 const OPEN_ON_START = process.argv.includes('--open');
 const PUBLIC_URL = 'https://pallusm.github.io/kommo-janifer-dashboard/';
+const PUBLIC_ORIGIN = 'https://pallusm.github.io';
 
 let currentJob = null;
 let lastJob = null;
@@ -210,6 +211,10 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
 
   if (req.method === 'GET' && url.pathname === '/api/status') {
+    if (req.headers.origin === PUBLIC_ORIGIN) {
+      res.setHeader('access-control-allow-origin', PUBLIC_ORIGIN);
+    }
+
     json(res, 200, panelStatus());
     return;
   }
@@ -220,6 +225,14 @@ const server = createServer(async (req, res) => {
   }
 
   if (req.method === 'POST' && url.pathname.startsWith('/api/run/')) {
+    const origin = req.headers.origin || '';
+    const localOrigin = `http://${HOST}:${PORT}`;
+
+    if (origin && origin !== localOrigin) {
+      json(res, 403, { ok: false, error: 'Acoes locais so podem ser iniciadas pelo painel local.' });
+      return;
+    }
+
     try {
       const kind = url.pathname.replace('/api/run/', '');
       const job = await runJob(kind);
