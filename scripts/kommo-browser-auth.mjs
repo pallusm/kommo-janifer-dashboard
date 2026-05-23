@@ -14,7 +14,8 @@ mkdirSync(PROFILE_DIR, { recursive: true });
 const context = await chromium.launchPersistentContext(PROFILE_DIR, {
   headless: false,
   viewport: { width: 1440, height: 900 },
-  slowMo: 40
+  slowMo: 40,
+  args: ['--disable-crash-reporter', '--disable-crashpad']
 });
 
 const page = context.pages()[0] || await context.newPage();

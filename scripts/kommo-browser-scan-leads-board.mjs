@@ -15,7 +15,8 @@ mkdirSync(PROFILE_DIR, { recursive: true });
 const context = await chromium.launchPersistentContext(PROFILE_DIR, {
   headless: HEADLESS,
   viewport: { width: 1920, height: 1080 },
-  slowMo: HEADLESS ? 0 : 60
+  slowMo: HEADLESS ? 0 : 60,
+  args: ['--disable-crash-reporter', '--disable-crashpad']
 });
 
 const page = context.pages()[0] || await context.newPage();
@@ -31,15 +32,26 @@ try {
       const style = getComputedStyle(element);
       return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
     };
+    const normalizeStage = (text) => {
+      const match = String(text || '').match(/(ETAPA\s*0?\d+\s*[-:]?\s*[^0-9#]+|ETAPA\s*0?\d+\s*[-:]?\s*[^0-9#]+|OPORTUNIDADE|AGENDADO|CONFIRMAÇÃO DE PAGAMENTO|REAGENDAMENTO|VENDA PERDIDA)/i);
+
+      if (!match) return '';
+
+      return match[1]
+        .replace(/\s+/g, ' ')
+        .replace(/\s+leads?:.*$/i, '')
+        .trim()
+        .toUpperCase();
+    };
     const columnHeadings = [...document.querySelectorAll('body *')]
       .filter(visible)
       .map((element) => {
         const text = textOf(element);
         const rect = element.getBoundingClientRect();
-        return { text, left: rect.left, right: rect.right, top: rect.top, width: rect.width };
+        return { text: normalizeStage(text), rawText: text, left: rect.left, right: rect.right, top: rect.top, width: rect.width };
       })
-      .filter((item) => /ETAPA|OPORTUNIDADE|AGENDADO|PAGAMENTO|REAGENDAMENTO|VENDA/i.test(item.text))
-      .filter((item) => item.width > 120 && item.top < 220)
+      .filter((item) => item.text && !/Lead #\d+/.test(item.rawText))
+      .filter((item) => item.text.length <= 48 && item.width > 120 && item.top < 260)
       .sort((a, b) => a.left - b.left);
     const cards = [...document.querySelectorAll('body *')]
       .filter(visible)
@@ -56,7 +68,7 @@ try {
           width: rect.width
         };
       })
-      .filter((item) => item.lead && item.width > 120)
+      .filter((item) => item.lead && item.width > 120 && item.text.length < 260)
       .map((card) => {
         const heading = columnHeadings
           .filter((item) => card.left >= item.left - 20)
