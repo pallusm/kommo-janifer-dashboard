@@ -130,6 +130,8 @@ function emptyPhrase(phrase) {
     valid: 0,
     discarded: 0,
     origins: {},
+    classifiedOrigins: {},
+    intentMatches: {},
     funnel: {}
   };
 }
@@ -139,11 +141,66 @@ function addCount(target, key) {
   target[normalizedKey] = (target[normalizedKey] || 0) + 1;
 }
 
+export function classifyOrigin(origin) {
+  const raw = String(origin || '').trim();
+  const normalized = raw
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  if (!normalized || normalized === 'selecione' || normalized === 'sem origem') {
+    return {
+      origin: 'Sem origem confiável',
+      detectedBy: 'Nenhum campo confiável',
+      confidence: 'Sem confiança'
+    };
+  }
+
+  if (/trafego|tráfego|meta|ads|anuncio|anúncio|campanha|paid|cpc|facebook/.test(normalized)) {
+    return {
+      origin: 'Tráfego pago',
+      detectedBy: 'Campo Origem do Kommo',
+      confidence: 'Média'
+    };
+  }
+
+  if (/instagram|direct|ig/.test(normalized)) {
+    return {
+      origin: 'Instagram',
+      detectedBy: 'Campo Origem do Kommo',
+      confidence: 'Média'
+    };
+  }
+
+  return {
+    origin: raw,
+    detectedBy: 'Campo Origem do Kommo',
+    confidence: 'Baixa'
+  };
+}
+
+export function classifyIntent(record) {
+  if (record.valido && record.frase_detectada && record.frase_detectada === record.frase_esperada) {
+    return 'Match exato';
+  }
+
+  if (record.frase_detectada) {
+    return 'Match forte';
+  }
+
+  return record.valido ? 'Match não classificado' : 'Descartado';
+}
+
 export function buildDashboardData() {
   const store = readStore();
   const phraseMap = new Map(PHRASES.map((phrase) => [phrase.label, emptyPhrase(phrase)]));
   const funnel = {};
   const commercialStatus = {};
+  const classifiedOrigins = {};
+  const originConfidence = {};
+  const intentMatches = {};
   const quality = {
     conversionReasons: {},
     lossReasons: {},
@@ -159,9 +216,17 @@ export function buildDashboardData() {
     }
 
     if (record.valido) {
+      const originClassification = classifyOrigin(record.origem);
+      const intentMatch = classifyIntent(record);
+
       phrase.valid += 1;
       addCount(phrase.origins, record.origem || 'Sem origem');
+      addCount(phrase.classifiedOrigins || (phrase.classifiedOrigins = {}), originClassification.origin);
+      addCount(phrase.intentMatches || (phrase.intentMatches = {}), intentMatch);
       addCount(phrase.funnel, record.funil_etapa || 'Sem etapa');
+      addCount(classifiedOrigins, originClassification.origin);
+      addCount(originConfidence, originClassification.confidence);
+      addCount(intentMatches, intentMatch);
       addCount(funnel, record.funil_etapa || 'Sem etapa');
 
       if (record.status_comercial) {
@@ -192,9 +257,19 @@ export function buildDashboardData() {
   return {
     period: '07/05/2026 a 22/05/2026',
     updatedAt: formatDateTime(new Date(store.updated_at || Date.now())),
+    criteria: {
+      periodType: 'Data da mensagem recebida',
+      validLead: 'Primeira mensagem recebida no período começa com uma das duas frases monitoradas.',
+      discardedLead: 'Resultado encontrado na busca, mas sem confirmação de primeira mensagem válida no período.',
+      originSources: ['Campo Origem do Kommo', 'Leitura do board de Leads', 'Enriquecimento GET da API Kommo'],
+      publicDataPolicy: 'GitHub Pages recebe apenas dados agregados; detalhes ficam no armazenamento local.'
+    },
     phrases: [...phraseMap.values()],
     funnel,
     commercialStatus,
+    classifiedOrigins,
+    originConfidence,
+    intentMatches,
     quality
   };
 }

@@ -1,6 +1,17 @@
 {
   "period": "07/05/2026 a 22/05/2026",
   "updatedAt": "22/05/2026, 23:23",
+  "criteria": {
+    "periodType": "Data da mensagem recebida",
+    "validLead": "Primeira mensagem recebida no período começa com uma das duas frases monitoradas.",
+    "discardedLead": "Resultado encontrado na busca, mas sem confirmação de primeira mensagem válida no período.",
+    "originSources": [
+      "Campo Origem do Kommo",
+      "Leitura do board de Leads",
+      "Enriquecimento GET da API Kommo"
+    ],
+    "publicDataPolicy": "GitHub Pages recebe apenas dados agregados; detalhes ficam no armazenamento local."
+  },
   "phrases": [
     {
       "key": "acompanhamento",
@@ -11,6 +22,14 @@
         "Sem origem": 2,
         "Instagram": 6,
         "Tráfego": 1
+      },
+      "classifiedOrigins": {
+        "Sem origem confiável": 2,
+        "Instagram": 6,
+        "Tráfego pago": 1
+      },
+      "intentMatches": {
+        "Match exato": 9
       },
       "funnel": {
         "1 - Conexão": 3,
@@ -27,6 +46,13 @@
       "origins": {
         "Sem origem": 8,
         "Instagram": 8
+      },
+      "classifiedOrigins": {
+        "Sem origem confiável": 8,
+        "Instagram": 8
+      },
+      "intentMatches": {
+        "Match exato": 16
       },
       "funnel": {
         "1 - Conexão": 4,
@@ -46,6 +72,18 @@
   },
   "commercialStatus": {
     "Perdido": 3
+  },
+  "classifiedOrigins": {
+    "Sem origem confiável": 10,
+    "Instagram": 14,
+    "Tráfego pago": 1
+  },
+  "originConfidence": {
+    "Sem confiança": 10,
+    "Média": 15
+  },
+  "intentMatches": {
+    "Match exato": 25
   },
   "quality": {
     "conversionReasons": {},

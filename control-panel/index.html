@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Local Kommo Janifer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <img src="/dashboard/assets/logo-trizi.png" alt="Instituto Trizi" class="logo">
+          <p class="eyebrow">Automação local segura</p>
+          <h1>Painel de Controle Kommo</h1>
+          <p class="subtitle">Atualize a coleta, leia o funil, enriqueça via API somente leitura e publique o dashboard sem abrir o Terminal.</p>
+        </div>
+        <div class="status-card" id="session-card">
+          <span>Sessão Kommo</span>
+          <strong id="session-status">Verificando</strong>
+          <small>Senha nunca é salva no projeto.</small>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article>
+          <span>Registros locais</span>
+          <strong id="store-total">0</strong>
+          <small id="store-updated">Aguardando leitura</small>
+        </article>
+        <article>
+          <span>Válidos</span>
+          <strong id="store-valid">0</strong>
+          <small>Primeiros contatos confirmados</small>
+        </article>
+        <article>
+          <span>Descartados</span>
+          <strong id="store-discarded">0</strong>
+          <small>Resultados sem validação</small>
+        </article>
+      </section>
+
+      <section class="panel primary-action">
+        <div>
+          <h2>Atualização completa</h2>
+          <p>Executa a sequência segura: coleta chats, lê etapas do funil, enriquece via API GET, atualiza dados públicos e publica no GitHub Pages.</p>
+        </div>
+        <button data-run="fullUpdate">Atualizar tudo</button>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Ações separadas</h2>
+            <p>Use quando quiser rodar apenas uma parte do processo.</p>
+          </div>
+        </div>
+        <div class="actions-grid">
+          <button data-run="auth">Reautenticar Kommo</button>
+          <button data-run="collect">Coletar chats</button>
+          <button data-run="scanLeads">Ler funil de Leads</button>
+          <button data-run="enrichApi">Enriquecer via API</button>
+          <button data-run="build">Atualizar dashboard local</button>
+          <button data-run="publish">Publicar dados</button>
+        </div>
+      </section>
+
+      <section class="link-grid">
+        <a id="local-dashboard" href="/dashboard/" target="_blank" rel="noreferrer">Abrir dashboard local</a>
+        <a id="public-dashboard" href="https://pallusm.github.io/kommo-janifer-dashboard/" target="_blank" rel="noreferrer">Abrir GitHub Pages</a>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Status da automação</h2>
+            <p id="job-status">Nenhuma ação em andamento.</p>
+          </div>
+        </div>
+        <pre id="logs">Pronto.</pre>
+      </section>
+
+      <section class="safety">
+        <strong>Regra de segurança ativa</strong>
+        <p>Este painel chama apenas scripts de leitura e publicação de dados agregados. Conversas, nomes, IDs e arquivos sensíveis permanecem locais.</p>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

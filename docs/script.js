@@ -1,6 +1,13 @@
 const fallbackData = {
   period: '07/05/2026 a 22/05/2026',
   updatedAt: '22/05/2026 18:00',
+  criteria: {
+    periodType: 'Data da mensagem recebida',
+    validLead: 'Primeira mensagem recebida no período começa com uma das duas frases monitoradas.',
+    discardedLead: 'Resultado encontrado na busca, mas sem confirmação de primeira mensagem válida no período.',
+    originSources: ['Campo Origem do Kommo', 'Leitura do board de Leads', 'Enriquecimento GET da API Kommo'],
+    publicDataPolicy: 'GitHub Pages recebe apenas dados agregados; detalhes ficam no armazenamento local.'
+  },
   phrases: [
     {
       key: 'acompanhamento',
@@ -11,6 +18,14 @@ const fallbackData = {
         Instagram: 7,
         Tráfego: 1,
         'Sem origem': 2
+      },
+      classifiedOrigins: {
+        Instagram: 7,
+        'Tráfego pago': 1,
+        'Sem origem confiável': 2
+      },
+      intentMatches: {
+        'Match exato': 10
       },
       funnel: {}
     },
@@ -24,11 +39,30 @@ const fallbackData = {
         Tráfego: 0,
         'Sem origem': 10
       },
+      classifiedOrigins: {
+        Instagram: 9,
+        'Sem origem confiável': 10
+      },
+      intentMatches: {
+        'Match exato': 19
+      },
       funnel: {}
     }
   ],
   funnel: {},
   commercialStatus: {},
+  classifiedOrigins: {
+    Instagram: 16,
+    'Tráfego pago': 1,
+    'Sem origem confiável': 12
+  },
+  originConfidence: {
+    Média: 17,
+    'Sem confiança': 12
+  },
+  intentMatches: {
+    'Match exato': 29
+  },
   quality: {
     conversionReasons: {},
     lossReasons: {},
@@ -53,12 +87,20 @@ function calculate(data) {
   const valid = sum(data.phrases, (item) => item.valid);
   const discarded = sum(data.phrases, (item) => item.discarded);
   const sample = valid + discarded;
-  const origins = data.phrases.reduce((acc, item) => {
+  const rawOrigins = data.phrases.reduce((acc, item) => {
     for (const [origin, value] of Object.entries(item.origins)) {
       acc[origin] = (acc[origin] || 0) + value;
     }
     return acc;
   }, {});
+  const origins = Object.keys(data.classifiedOrigins || {}).length
+    ? data.classifiedOrigins
+    : data.phrases.reduce((acc, item) => {
+        for (const [origin, value] of Object.entries(item.classifiedOrigins || item.origins || {})) {
+          acc[origin] = (acc[origin] || 0) + value;
+        }
+        return acc;
+      }, {});
   const topPhrase = data.phrases.slice().sort((a, b) => b.valid - a.valid)[0];
   const funnel = data.funnel || data.phrases.reduce((acc, item) => {
     for (const [stage, value] of Object.entries(item.funnel || {})) {
@@ -73,6 +115,7 @@ function calculate(data) {
     sample,
     validRate: sample ? (valid / sample) * 100 : 0,
     origins,
+    rawOrigins,
     funnel,
     topPhrase
   };
@@ -91,8 +134,48 @@ function renderKpis(data, totals) {
   setText('kpi-descartados', `${totals.discarded} descartados`);
   setText('kpi-instagram', totals.origins.Instagram || 0);
   setText('kpi-instagram-share', `${formatPercent(((totals.origins.Instagram || 0) / totals.valid) * 100 || 0)} dos válidos`);
-  setText('kpi-sem-origem', totals.origins['Sem origem'] || 0);
-  setText('kpi-sem-origem-share', `${formatPercent(((totals.origins['Sem origem'] || 0) / totals.valid) * 100 || 0)} dos válidos`);
+  setText('kpi-trafego', totals.origins['Tráfego pago'] || 0);
+  setText('kpi-trafego-share', `${formatPercent(((totals.origins['Tráfego pago'] || 0) / totals.valid) * 100 || 0)} dos válidos`);
+  setText('kpi-sem-origem', totals.origins['Sem origem confiável'] || totals.origins['Sem origem'] || 0);
+  setText('kpi-sem-origem-share', `${formatPercent((((totals.origins['Sem origem confiável'] || totals.origins['Sem origem'] || 0) / totals.valid) * 100) || 0)} dos válidos`);
+}
+
+function renderEmptyState(data, totals) {
+  const empty = document.querySelector('#empty-state');
+  empty.hidden = totals.sample > 0;
+
+  const meta = empty.querySelector('.empty-state-meta');
+  meta.innerHTML = `
+    <span>Última coleta: ${totals.sample ? data.updatedAt : 'não realizada'}</span>
+    <span>Período: ${totals.sample ? data.period : 'aguardando configuração'}</span>
+    <span>Status da API: ${totals.sample ? 'dados locais carregados' : 'aguardando conexão local'}</span>
+  `;
+}
+
+function criteriaItem(label, value) {
+  return `
+    <article class="criteria-item">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </article>
+  `;
+}
+
+function renderCriteria(data) {
+  const criteria = data.criteria || {};
+  const phrases = (data.phrases || []).map((item) => item.label).join('<br>');
+  const originSources = (criteria.originSources || []).join(', ');
+
+  document.querySelector('#criteria-grid').innerHTML = [
+    criteriaItem('Período analisado', data.period || 'Aguardando dados'),
+    criteriaItem('Tipo de período', criteria.periodType || 'Data da mensagem recebida'),
+    criteriaItem('Frases buscadas', phrases || 'Aguardando configuração'),
+    criteriaItem('Fontes de origem', originSources || 'Campo Origem do Kommo'),
+    criteriaItem('Lead válido', criteria.validLead || 'Primeira mensagem bate com as frases monitoradas.'),
+    criteriaItem('Lead descartado', criteria.discardedLead || 'Resultado sem confirmação de primeira mensagem válida.'),
+    criteriaItem('Última atualização', data.updatedAt || 'Não realizada'),
+    criteriaItem('Segurança', criteria.publicDataPolicy || 'Somente dados agregados no site público.')
+  ].join('');
 }
 
 function renderPhrases(data) {
@@ -102,8 +185,11 @@ function renderPhrases(data) {
     .map((item) => {
       const sample = item.valid + item.discarded;
       const rate = sample ? (item.valid / sample) * 100 : 0;
-      const originText = Object.entries(item.origins)
+      const originText = Object.entries(item.classifiedOrigins || item.origins || {})
         .map(([origin, value]) => `<span class="chip">${origin}: ${value}</span>`)
+        .join('');
+      const matchText = Object.entries(item.intentMatches || {})
+        .map(([match, value]) => `<span class="chip">${match}: ${value}</span>`)
         .join('');
 
       return `
@@ -121,6 +207,7 @@ function renderPhrases(data) {
           <div class="phrase-meta">
             <span class="chip">Taxa válida: ${formatPercent(rate)}</span>
             <span class="chip">Descartados: ${item.discarded}</span>
+            ${matchText}
             ${originText}
           </div>
         </article>
@@ -183,8 +270,9 @@ function renderFunnel(totals) {
 
 function renderInsights(totals) {
   const topPhraseShare = totals.valid && totals.topPhrase ? (totals.topPhrase.valid / totals.valid) * 100 : 0;
-  const noOriginShare = totals.valid ? ((totals.origins['Sem origem'] || 0) / totals.valid) * 100 : 0;
+  const noOriginShare = totals.valid ? (((totals.origins['Sem origem confiável'] || totals.origins['Sem origem'] || 0) / totals.valid) * 100) : 0;
   const instagramShare = totals.valid ? ((totals.origins.Instagram || 0) / totals.valid) * 100 : 0;
+  const trafficShare = totals.valid ? (((totals.origins['Tráfego pago'] || 0) / totals.valid) * 100) : 0;
   const topPhraseLabel = totals.topPhrase?.key === 'agendamento' ? 'Agendamento' : 'Acompanhamento';
 
   document.querySelector('#insights').innerHTML = `
@@ -193,12 +281,12 @@ function renderInsights(totals) {
       <p>A frase de maior volume representa ${formatPercent(topPhraseShare)} dos leads válidos da amostra.</p>
     </article>
     <article class="insight">
-      <strong>Instagram concentra a principal origem identificada</strong>
-      <p>${formatPercent(instagramShare)} dos válidos têm Instagram como origem preenchida.</p>
+      <strong>Instagram e tráfego pago agora têm pesos comparáveis</strong>
+      <p>Instagram representa ${formatPercent(instagramShare)} dos válidos; tráfego pago representa ${formatPercent(trafficShare)}.</p>
     </article>
     <article class="insight warning">
       <strong>Atribuição ainda tem perda relevante</strong>
-      <p>${formatPercent(noOriginShare)} dos válidos estão sem origem, o que limita leitura de performance por canal.</p>
+      <p>${formatPercent(noOriginShare)} dos válidos estão sem origem confiável, o que limita leitura de performance por canal.</p>
     </article>
   `;
 }
@@ -216,7 +304,7 @@ function countStages(funnel, names) {
 function renderDiagnostic(data, totals) {
   const topStage = topPair(totals.funnel);
   const topOrigin = topPair(totals.origins);
-  const noOrigin = totals.origins['Sem origem'] || 0;
+  const noOrigin = totals.origins['Sem origem confiável'] || totals.origins['Sem origem'] || 0;
   const lost = countStages(totals.funnel, ['Venda perdida']) || (data.commercialStatus?.Perdido || 0);
   const standBy = countStages(totals.funnel, ['Stand By']);
   const payment = countStages(totals.funnel, ['4 - Confirmação de pagamento', 'Confirmação de pagamento']);
@@ -236,13 +324,13 @@ function renderDiagnostic(data, totals) {
     {
       label: 'Canal dominante',
       value: topOrigin ? topOrigin[0] : 'Aguardando origem',
-      detail: topOrigin ? `${topOrigin[1]} leads válidos vieram desta origem preenchida.` : 'Ainda não há origem suficiente para comparação.',
+      detail: topOrigin ? `${topOrigin[1]} leads válidos vieram desta origem classificada.` : 'Ainda não há origem suficiente para comparação.',
       tone: 'neutral'
     },
     {
       label: 'Perda de atribuição',
       value: formatPercent(noOriginShare),
-      detail: `${noOrigin} leads válidos estão sem origem preenchida.`,
+      detail: `${noOrigin} leads válidos estão sem origem confiável.`,
       tone: noOriginShare >= 25 ? 'warning' : 'neutral'
     },
     {
@@ -293,9 +381,9 @@ function renderActionList(selector, items) {
 }
 
 function renderStrategicActions(data, totals) {
-  const noOrigin = totals.origins['Sem origem'] || 0;
+  const noOrigin = totals.origins['Sem origem confiável'] || totals.origins['Sem origem'] || 0;
   const instagram = totals.origins.Instagram || 0;
-  const traffic = totals.origins.Tráfego || 0;
+  const traffic = totals.origins['Tráfego pago'] || 0;
   const lost = countStages(totals.funnel, ['Venda perdida']) || (data.commercialStatus?.Perdido || 0);
   const standBy = countStages(totals.funnel, ['Stand By']);
   const connection = countStages(totals.funnel, ['1 - Conexão', 'Conexão']);
@@ -332,7 +420,7 @@ function renderStrategicActions(data, totals) {
   const managementItems = [
     action(
       'Acompanhar conversão por origem',
-      `Instagram tem ${instagram} válidos e tráfego tem ${traffic}. A decisão de investimento deve cruzar volume, avanço de funil e perda.`,
+      `Instagram tem ${instagram} válidos e tráfego pago tem ${traffic}. A decisão de investimento deve cruzar volume, avanço de funil e perda.`,
       'Canal'
     ),
     action(
@@ -350,7 +438,7 @@ function renderStrategicActions(data, totals) {
   const processItems = [
     action(
       'Obrigar origem antes do avanço',
-      `${noOrigin} leads válidos estão sem origem. Sem isso, o dashboard perde força para decidir canal e verba.`,
+      `${noOrigin} leads válidos estão sem origem confiável. Sem isso, o dashboard perde força para decidir canal e verba.`,
       'Dados'
     ),
     action(
@@ -440,6 +528,8 @@ function renderTable(data) {
     .map((item) => {
       const sample = item.valid + item.discarded;
       const rate = sample ? (item.valid / sample) * 100 : 0;
+      const origins = item.classifiedOrigins || item.origins || {};
+      const intentMatches = item.intentMatches || {};
 
       return `
         <tr>
@@ -447,9 +537,10 @@ function renderTable(data) {
           <td class="number-good">${item.valid}</td>
           <td class="number-warn">${item.discarded}</td>
           <td>${formatPercent(rate)}</td>
-          <td>${item.origins.Instagram || 0}</td>
-          <td>${item.origins.Tráfego || 0}</td>
-          <td>${item.origins['Sem origem'] || 0}</td>
+          <td>${origins.Instagram || 0}</td>
+          <td>${origins['Tráfego pago'] || 0}</td>
+          <td>${origins['Sem origem confiável'] || origins['Sem origem'] || 0}</td>
+          <td>${topEntry(intentMatches)}</td>
           <td>${topEntry(item.funnel)}</td>
         </tr>
       `;
@@ -460,6 +551,8 @@ function renderTable(data) {
 loadData().then((data) => {
   const totals = calculate(data);
   renderKpis(data, totals);
+  renderEmptyState(data, totals);
+  renderCriteria(data);
   renderPhrases(data);
   renderOrigins(totals);
   renderFunnel(totals);

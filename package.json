@@ -11,11 +11,13 @@
     "import:scan": "node scripts/import-scan-results.mjs",
     "build:dashboard": "node scripts/build-dashboard-data.mjs",
     "collector": "node scripts/collector-server.mjs",
+    "panel": "node scripts/control-panel-server.mjs",
     "collector:publish": "KOMMO_COLLECTOR_AUTO_PUBLISH=1 node scripts/collector-server.mjs",
     "kommo:auth": "node scripts/kommo-browser-auth.mjs",
+    "kommo:auth-panel": "node scripts/kommo-browser-auth-panel.mjs",
     "kommo:collect": "node scripts/kommo-browser-collect.mjs",
     "kommo:scan-leads": "node scripts/kommo-browser-scan-leads-board.mjs",
     "kommo:enrich-api": "node scripts/kommo-enrich-leads-api.mjs",
-    "publish:dashboard": "npm run build:dashboard && git add docs/data.json && git commit -m \"Update dashboard data\" && git push"
+    "publish:dashboard": "npm run build:dashboard && git add docs/data.json site/data.json && git commit -m \"Update dashboard data\" && git push"
   }
 }

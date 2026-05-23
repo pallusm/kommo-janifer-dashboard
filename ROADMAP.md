@@ -28,6 +28,7 @@ Objetivo: transformar o projeto em um dashboard de inteligencia comercial para a
 - Coleta automatizada via navegador local criada para buscar as duas frases nos Chats.
 - Leitura da pagina Leads/board criada para identificar etapas visiveis do funil.
 - Enriquecimento por API oficial da Kommo criado com chamadas GET somente leitura.
+- Painel local sem Terminal criado para autenticar, coletar, ler funil, enriquecer, atualizar e publicar com botoes.
 - Dashboard publico publica somente agregados; detalhes seguem locais.
 
 ## O que ja saiu do roadmap inicial
@@ -49,6 +50,12 @@ Objetivo: transformar o projeto em um dashboard de inteligencia comercial para a
   - decisoes de gestao;
   - melhorias de processo;
   - proximos experimentos.
+- Identidade visual alinhada ao Instituto Trizi, com logo, fontes e cores da marca.
+- Primeira classificacao auditavel criada:
+  - origem classificada;
+  - origem detectada por;
+  - confianca da origem;
+  - tipo de match.
 
 ## O que ainda ficou de fora
 
@@ -59,6 +66,7 @@ Objetivo: transformar o projeto em um dashboard de inteligencia comercial para a
 - Rotina 100% incremental por ultimo item processado em cada frase.
 - Alertas automaticos para gargalos, perdas ou falta de origem.
 - Refinamento visual final do dashboard para apresentacao ao cliente.
+- App local assinado/notarizado para macOS, se um dia precisarmos distribuir para outras maquinas.
 
 ## Fase 1: coleta operacional estavel
 
@@ -71,6 +79,7 @@ Objetivo: transformar a coleta atual em um fluxo repetivel, simples e confiavel.
 - Atualizar o dashboard local sem copiar JSON manualmente. Feito.
 - Publicar somente agregados no GitHub Pages. Feito.
 - Registrar falhas de coleta, como lead aberto sem mensagem visivel ou origem vazia.
+- Operar a rotina por painel local com botoes, sem abrir Terminal. Feito.
 
 Resultado esperado: conseguir atualizar o dashboard de entrada de leads com poucos passos e baixo risco.
 
@@ -161,6 +170,7 @@ Objetivo: reduzir manutencao manual e evitar reprocessamento desnecessario.
 - Salvar ultimo ponto processado por frase e por fonte.
 - Buscar apenas novos resultados desde a ultima coleta.
 - Criar rotina local de atualizacao.
+- Executar rotina local por app/painel visual, sem comandos manuais. Feito como primeira versao local.
 - Avaliar uso futuro de API/webhooks oficiais quando houver credenciais adequadas.
 - Preparar exportacoes periodicas.
 - Criar logs locais para auditoria.

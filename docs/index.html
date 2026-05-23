@@ -17,8 +17,9 @@
             <img src="./assets/logo-trizi.png" alt="Instituto Trizi" class="brand-logo">
             <p class="eyebrow">Kommo CRM</p>
           </div>
-          <h1>Primeiro contato - Dra. Janifer</h1>
-          <p class="subtitle">Leads classificados pelas mensagens iniciais capturadas na aba Chats.</p>
+          <h1>Auditoria de Leads Kommo | Dra. Janifer</h1>
+          <p class="subtitle">Análise dos primeiros contatos recebidos no Kommo, com classificação por frase, origem e avanço comercial.</p>
+          <p class="subtitle detail">Este painel identifica leads interessados na Dra. Janifer, separa origem entre Instagram, Tráfego pago e Sem origem confiável, e aponta falhas de registro no CRM.</p>
         </div>
         <div class="status-panel">
           <span>Período</span>
@@ -28,26 +29,53 @@
       </header>
 
       <section class="kpi-grid" aria-label="Indicadores principais">
+        <article class="kpi-card">
+          <span>Leads analisados</span>
+          <strong id="kpi-amostra">0</strong>
+          <small id="kpi-descartados">0 descartados</small>
+        </article>
         <article class="kpi-card primary">
           <span>Leads válidos</span>
           <strong id="kpi-validos">0</strong>
           <small id="kpi-validos-detail">0% da amostra</small>
         </article>
         <article class="kpi-card">
-          <span>Amostra lida</span>
-          <strong id="kpi-amostra">0</strong>
-          <small id="kpi-descartados">0 descartados</small>
-        </article>
-        <article class="kpi-card">
           <span>Instagram</span>
           <strong id="kpi-instagram">0</strong>
           <small id="kpi-instagram-share">0% dos válidos</small>
         </article>
+        <article class="kpi-card">
+          <span>Tráfego pago</span>
+          <strong id="kpi-trafego">0</strong>
+          <small id="kpi-trafego-share">0% dos válidos</small>
+        </article>
         <article class="kpi-card attention">
-          <span>Sem origem</span>
+          <span>Sem origem confiável</span>
           <strong id="kpi-sem-origem">0</strong>
           <small id="kpi-sem-origem-share">0% dos válidos</small>
         </article>
+      </section>
+
+      <section id="empty-state" class="panel empty-state" hidden>
+        <div>
+          <h2>Nenhum dado carregado ainda</h2>
+          <p>Execute a coleta via Kommo para visualizar os leads dos últimos 15 dias.</p>
+        </div>
+        <div class="empty-state-meta">
+          <span>Última coleta: não realizada</span>
+          <span>Período: aguardando configuração</span>
+          <span>Status da API: aguardando conexão local</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Critérios da análise</h2>
+            <p>Regras usadas para validar leads, classificar origem e preservar segurança dos dados.</p>
+          </div>
+        </div>
+        <div id="criteria-grid" class="criteria-grid"></div>
       </section>
 
       <section class="content-grid">
@@ -172,8 +200,9 @@
                 <th>Descartados</th>
                 <th>Taxa válida</th>
                 <th>Instagram</th>
-                <th>Tráfego</th>
-                <th>Sem origem</th>
+                <th>Tráfego pago</th>
+                <th>Sem origem confiável</th>
+                <th>Match dominante</th>
                 <th>Principal etapa</th>
               </tr>
             </thead>
