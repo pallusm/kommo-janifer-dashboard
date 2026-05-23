@@ -1,6 +1,6 @@
 {
   "period": "07/05/2026 a 22/05/2026",
-  "updatedAt": "22/05/2026, 22:55",
+  "updatedAt": "22/05/2026, 23:05",
   "phrases": [
     {
       "key": "acompanhamento",
@@ -13,8 +13,8 @@
         "Tráfego": 1
       },
       "funnel": {
-        "ETAPA01 - CONEXÃO": 3,
-        "ETAPA02 - OPORTUNIDADE": 3,
+        "1 - Conexão": 3,
+        "2 - Oportunidade": 3,
         "Sem etapa": 3
       }
     },
@@ -28,18 +28,18 @@
         "Instagram": 8
       },
       "funnel": {
-        "Sem etapa": 8,
-        "ETAPA 4: CONFIRMAÇÃO DE PAGAMENTO": 1,
-        "ETAPA01 - CONEXÃO": 3,
-        "ETAPA02 - OPORTUNIDADE": 4
+        "1 - Conexão": 4,
+        "4 - Confirmação de pagamento": 1,
+        "2 - Oportunidade": 4,
+        "Sem etapa": 7
       }
     }
   ],
   "funnel": {
-    "ETAPA01 - CONEXÃO": 6,
-    "ETAPA02 - OPORTUNIDADE": 7,
-    "Sem etapa": 11,
-    "ETAPA 4: CONFIRMAÇÃO DE PAGAMENTO": 1
+    "1 - Conexão": 7,
+    "2 - Oportunidade": 7,
+    "Sem etapa": 10,
+    "4 - Confirmação de pagamento": 1
   },
   "commercialStatus": {},
   "quality": {
