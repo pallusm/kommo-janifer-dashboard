@@ -38,12 +38,19 @@ async function waitForKommo() {
 }
 
 async function searchChats(query) {
-  const searchInput = page.locator('input[type="search"], input[type="text"], textarea').first();
-  await searchInput.waitFor({ timeout: 15000 });
+  const searchInput = page.locator([
+    '.search-container__input.js-inbox-search:visible:not([disabled])',
+    'input[placeholder*="Buscar"]:visible:not([disabled])',
+    'input[type="search"]:visible:not([disabled])',
+    'input[type="text"]:visible:not([disabled])',
+    'textarea:visible:not([disabled])'
+  ].join(', ')).first();
+
+  await searchInput.waitFor({ state: 'visible', timeout: 30000 });
   await searchInput.click();
   await page.keyboard.press('Meta+A').catch(() => {});
   await page.keyboard.press('Control+A').catch(() => {});
-  await searchInput.fill(query);
+  await searchInput.fill(query, { timeout: 30000 });
   await page.waitForTimeout(3500);
 }
 
